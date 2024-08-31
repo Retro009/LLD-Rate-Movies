@@ -25,11 +25,12 @@ public class RatingsServiceImpl implements RatingsService{
     public Rating rateMovie(int userId, int movieId, int rating) throws UserNotFoundException, MovieNotFoundException {
         User user = userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User Not Found"));
         Movie movie = movieRepository.findById(movieId).orElseThrow(()-> new MovieNotFoundException(("Movie Not Found")));
-        Rating rate = new Rating();
-        rate.setRating(rating);
-        rate.setUser(user);
-        rate.setMovie(movie);
-        return ratingRepository.save(rate);
+        Rating existingRating = ratingRepository.findByUserAndMovie(user, movie)
+                .orElse(new Rating());
+        existingRating.setRating(rating);
+        existingRating.setUser(user);
+        existingRating.setMovie(movie);
+        return ratingRepository.save(existingRating);
     }
 
     @Override
