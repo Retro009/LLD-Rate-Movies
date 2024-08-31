@@ -1,17 +1,36 @@
 package com.example.bmsbookticket.controllers;
 
-import com.example.bmsbookticket.dtos.GetAverageMovieRequestDto;
-import com.example.bmsbookticket.dtos.GetAverageMovieResponseDto;
-import com.example.bmsbookticket.dtos.RateMovieRequestDto;
-import com.example.bmsbookticket.dtos.RateMovieResponseDto;
+import com.example.bmsbookticket.dtos.*;
+import com.example.bmsbookticket.exceptions.MovieNotFoundException;
+import com.example.bmsbookticket.exceptions.UserNotFoundException;
+import com.example.bmsbookticket.services.RatingsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
+@Controller
 public class RatingsController {
+    @Autowired
+    private RatingsService ratingsService;
 
     public RateMovieResponseDto rateMovie(RateMovieRequestDto requestDto){
-        return null;
+        RateMovieResponseDto responseDto = new RateMovieResponseDto();
+        try {
+            responseDto.setRating(ratingsService.rateMovie(requestDto.getUserId(), requestDto.getMovieId(), requestDto.getRating()));
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        } catch (UserNotFoundException | MovieNotFoundException e) {
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+        return responseDto;
     }
 
     public GetAverageMovieResponseDto getAverageMovieRating(GetAverageMovieRequestDto requestDto){
-        return null;
+        GetAverageMovieResponseDto responseDto = new GetAverageMovieResponseDto();
+        try {
+            responseDto.setAverageRating(ratingsService.getAverageRating(requestDto.getMovieId()));
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        } catch (MovieNotFoundException e) {
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+        return responseDto;
     }
 }
